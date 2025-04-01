@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+<body>
+    <div class="container">
+        <h1>Heart Disease Prediction</h1>
+        <form id="predictionForm">
+            <!-- Age -->
+			<div class="row">
+			<div class="row-element">
+            <label for="age">Age:</label>
+            <select id="age" name="age">
+                <script>
+                    for (let i = 18; i <= 120; i++) {
+                        document.write(`<option value="${i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+			</div>
+
+            <!-- Gender -->
+			<div class="row-element">
+            <label for="sex">Gender:</label>
+            <select id="sex" name="sex">
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+            </select>
+			</div>
+</div>
+            <!-- Chest Pain -->
+				<div class="row">
+			<div class="row-element">
+            <label for="cp">Chest Pain:</label>
+            <select id="cp" name="cp">
+                <option value="0">Typical Angina</option>
+                <option value="1">Atypical Angina</option>
+                <option value="2">Non-anginal Pain</option>
+                <option value="3">Asymptomatic</option>
+            </select>
+			</div>
+
+            <!-- Resting Blood Pressure -->
+			<div class="row-element">
+            <label for="trestbps">Resting Blood Pressure (mm Hg):</label>
+            <select id="trestbps" name="trestbps">
+                <script>
+                    for (let i = 90; i <= 200; i++) {
+                        document.write(`<option value="${i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+			</div>
+			</div>
+	
+	<div class="row">
+            <!-- Serum Cholesterol -->
+			<div class="row-element">
+            <label for="chol">Serum Cholesterol (mg/dl):</label>
+            <select id="chol" name="chol">
+                <script>
+                    for (let i = 120; i <= 570; i++) {
+                        document.write(`<option value="${i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+			</div>
+
+            <!-- Fasting Blood Sugar -->
+			<div class="row-element">
+            <label for="fbs">Fasting Blood Sugar (above 120 mg/dl):</label>
+            <select id="fbs" name="fbs">
+                <option value="1">True</option>
+                <option value="0">False</option>
+            </select>
+			</div>
+	</div>
+
+   	<div class="row">
+	<!-- Slope -->
+	 <div class="row-element">
+            <label for="slope">Slope:</label>
+            <select id="slope" name="slope">
+                <option value="0">Upsloping</option>
+                <option value="1">Flat</option>
+                <option value="2">Downsloping</option>
+            </select>
+			</div>
+
+           
+<div class="row-element">
+            <!-- Maximum Heart Rate -->
+            <label for="thalach">Maximum Heart Rate During Stress Test:</label>
+            <select id="thalach" name="thalach">
+                <script>
+                    for (let i = 72; i <= 200; i++) {
+                        document.write(`<option value="${i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+			</div>
+	</div>		
+ <!-- Rest ECG -->
+    	<div class="row">
+		<div class="row-element">
+            <label for="restecg">Rest ECG:</label>
+            <select id="restecg" name="restecg">
+                <option value="0">Normal</option>
+                <option value="1">Having ST-T wave abnormality</option>
+                <option value="2">Probable/Definite left ventricular hypertrophy</option>
+            </select>
+			</div>
+            <!-- Exercise-Induced Angina -->
+			<div class="row-element">
+            <label for="exang">Exercise-Induced Angina:</label>
+            <select id="exang" name="exang">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+			</div>
+</div>
+ 
+	<div class="row">
+<div class="row-element">
+            <!-- Number of Major Vessels -->
+            <label for="ca">Number of Major Vessels (colored by fluoroscopy):</label>
+            <select id="ca" name="ca">
+                <script>
+                    for (let i = 0; i <= 4; i++) {
+                        document.write(`<option value="${i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+			</div>
+
+<div class="row-element">
+            <!-- Thalium Stress Test -->
+            <label for="thal">Thalium Stress Test Result:</label>
+            <select id="thal" name="thal">
+                <option value="0">Normal</option>
+                <option value="1">Fixed Defect</option>
+                <option value="2">Reversible Defect</option>
+                <option value="3">Not Described</option>
+            </select>
+			</div>
+	</div>		
+				<div class="last-row">
+            <!-- ST Depression -->
+			<div class="row-element">
+            <label for="oldpeak">ST Depression Induced By Exercise Relative To Rest:</label>
+            <select id="oldpeak" name="oldpeak" class="last-select">
+                <script>
+                    for (let i = 0; i <= 65; i++) {
+                        document.write(`<option value="${(i / 10).toFixed(1)}">${(i / 10).toFixed(1)}</option>`);
+                    }
+                </script>
+            </select>
+
+       </div>
+	   </div>
+
+            <!-- Submit Button -->
+            <button type="button" id="predictBtn">Predict</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('predictBtn').addEventListener('click', function() {
+            const formData = new FormData(document.getElementById('predictionForm'));
+            const data = {};
+
+            formData.forEach((value, key) => {
+                data[key] = Number(value); // Ensure all values are numeric
+            });
+			// Clear and hide result before making the request
+    const resultDiv = document.getElementById('result');
+    resultDiv.textContent = ''; 
+    resultDiv.style.display = 'none';
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('result').textContent = `Patient Is On Risk Of Heart Disease : ${result.Disease}`;
+				 if (result.Disease === true || result.Disease === 'true') {
+                resultDiv.style.backgroundColor = '#FF4C4C'; // Red for danger
+            } else {
+                resultDiv.style.backgroundColor = '#4CAF50'; // Green for no risk
+            }
+
+				
+				
+				 resultDiv.style.display = 'block'; // Show the result div
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            resultDiv.textContent = 'An error occurred. Please try again.';
+            resultDiv.style.display = 'block'; // Show the error message
+            resultDiv.style.backgroundColor = '#FF4C4C'; // Red background for error
+            });
+        });
+    </script>
+</body>
+</html>
